@@ -20,7 +20,7 @@ public class PreprocessData
 	}
 
 	public static void main(String[] args) {
-		PreprocessData P = new PreprocessData("C://Users//SUBHADIP JANA//Desktop//ID3_dataSet.txt","C://Users//SUBHADIP JANA//Desktop//ID3PreprocessData.txt");
+		PreprocessData P = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt");
 		try{
 		//P.modifyDataSet();
 		P.createDataPointsList();
