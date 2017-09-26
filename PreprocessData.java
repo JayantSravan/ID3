@@ -13,14 +13,14 @@ public class PreprocessData
 
 	public PreprocessData(String rawDataSetFile,String outputDataSetFile)
 	{
-		this.classListFile = classListFile;
+		//this.classListFile = classListFile;
 		this.rawDataSetFile = rawDataSetFile;
 		this.processedDataFile = outputDataSetFile;
 
 	}
 
 	public static void main(String[] args) {
-		PreprocessData P = new PreprocessData("C://Users//SUBHADIP JANA//Desktop//ID3_dataSet.txt","C://Users//SUBHADIP JANA//Desktop//ID3PreprocessData.txt");
+		PreprocessData P = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt");
 		try{
 		//P.modifyDataSet();
 		P.createDataPointsList();
@@ -49,12 +49,12 @@ public class PreprocessData
 	public static ArrayList<ArrayList<String>> createDataPointsList() throws IOException
 	{
 		modifyDataSet();
-		ArrayList<String[]> dataPoints_ArrayList = new ArrayList<String[]>();
+		ArrayList<ArrayList<String>> dataPoints_ArrayList = new ArrayList<ArrayList<String>>();
 		bfr = new BufferedReader(new FileReader(processedDataFile));
 
 		while((line=bfr.readLine())!=null)
 		{
-			lineSplit = line.split(", ")
+			lineSplit = line.split(", ");
 			ArrayList<String> lineArrayList = new ArrayList<String>(Arrays.asList(lineSplit));
 			dataPoints_ArrayList.add(lineArrayList);
 		}
