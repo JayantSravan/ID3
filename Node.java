@@ -1,6 +1,6 @@
 import java.util.*
 
-class Node
+public class Node
 {
   ArrayList<ArrayList<String>> reducedTable = new ArrayList<ArrayList<String>>();
 
