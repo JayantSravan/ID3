@@ -20,7 +20,11 @@ public class PreprocessData
 	}
 
 	public static void main(String[] args) {
+<<<<<<< HEAD
 		PreprocessData P = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt");
+=======
+		PreprocessData P = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt");
+>>>>>>> a51f1559329c39155db196eea10434c36e092ec8
 		try{
 		//P.modifyDataSet();
 		P.createDataPointsList();
