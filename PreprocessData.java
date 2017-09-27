@@ -10,60 +10,58 @@ public class PreprocessData
 	static String line;
 	static String[] lineSplit;
 	static BufferedReader bfr;
-	
-	public PreprocessData(String classListFile, String rawDataSetFile,String outputDataSetFile)
+
+	public PreprocessData(String rawDataSetFile,String outputDataSetFile)
 	{
-		this.classListFile = classListFile;
+		//this.classListFile = classListFile;
 		this.rawDataSetFile = rawDataSetFile;
 		this.processedDataFile = outputDataSetFile;
-		try
-		{
-			bfr = new BufferedReader(new FileReader(classListFile));
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}		
-	
+
+	}
+
 	public static void main(String[] args) {
-		PreprocessData P = new PreprocessData("C://Users//SUBHADIP JANA//Desktop//classList.txt","C://Users//SUBHADIP JANA//Desktop//ID3_dataSet.txt","C://Users//SUBHADIP JANA//Desktop//ID3PreprocessData.txt");
+//<<<<<<< HEAD
+		//PreprocessData P = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt");
+//=======
+		PreprocessData P = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt");
+//>>>>>>> a51f1559329c39155db196eea10434c36e092ec8
 		try{
 		//P.modifyDataSet();
 		P.createDataPointsList();
 		}
 		catch(IOException ioe){System.out.println("File error");}
 
-	
+
 	}
-	
+
 	public static void modifyDataSet() throws IOException
 	{
 		bfr = new BufferedReader(new FileReader(rawDataSetFile));
 		new FileWriter(processedDataFile);
-		FileWriter fw = new FileWriter(processedDataFile);		
+		FileWriter fw = new FileWriter(processedDataFile);
 		while((line=bfr.readLine())!=null)
 		{
 			lineSplit = line.split(", ");
 			if(lineSplit[lineSplit.length-1].contains("=")) lineSplit[lineSplit.length-1] = "0";
 			else lineSplit[lineSplit.length-1] = "1";
-			line = Arrays.toString(lineSplit);			
-			fw.write(line.substring(1,line.length()-1) + "\n");			
+			line = Arrays.toString(lineSplit);
+			fw.write(line.substring(1,line.length()-1) + "\n");
 		}
 		fw.close();
 	}
-	
-	public static String[][] createDataPointsList() throws IOException
+
+	public static ArrayList<ArrayList<String>> createDataPointsList() throws IOException
 	{
 		modifyDataSet();
-		ArrayList<String[]> dataPoints_ArrayList = new ArrayList<String[]>();
+		ArrayList<ArrayList<String>> dataPoints_ArrayList = new ArrayList<ArrayList<String>>();
 		bfr = new BufferedReader(new FileReader(processedDataFile));
-		
+
 		while((line=bfr.readLine())!=null)
 		{
-			dataPoints_ArrayList.add(line.split(", "));
+			lineSplit = line.split(", ");
+			ArrayList<String> lineArrayList = new ArrayList<String>(Arrays.asList(lineSplit));
+			dataPoints_ArrayList.add(lineArrayList);
 		}
-		
-		return dataPoints_ArrayList.toArray(new String[0][0]);
+		return dataPoints_ArrayList;
 	}
 }
