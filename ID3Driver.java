@@ -5,31 +5,42 @@ import java.io.*;
 public class ID3Driver
 {
 	static ArrayList<ArrayList<String>> dataSet;
-
+	static Range rng;
+        
 	public static void main(String[] args)
 	{
-<<<<<<< HEAD
-		try{
-		dataSet = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt").createDataPointsList();
-	}catch(IOException ioe){ioe.printStackTrace();}
+//<<<<<<< HEAD
+		try
+		{
+		
+			dataSet = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt").createDataPointsList();
+			 rng = new Range();
+		}
+		catch(IOException ioe)
+		{	
+			ioe.printStackTrace();
+		}
+	        
 		test();
+		resolveUnknown();
 		//dataSet = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt").createDataPointsList();
-=======
-		dataSet = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt").createDataPointsList();
+//=======
+		//dataSet = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt").createDataPointsList();
 	}
 
 
-	public void resolveUnknown()
+	public static void resolveUnknown()
 	{
-		Range range = new Range();
+		//Range rng = new Range();
 		ArrayList<String> CommonAttribute = new ArrayList<String>();
-		int noOfAttributes = lastIndexOf(dataset.get(1));
+		int noOfAttributes = dataSet.get(1).size()-1;
 		int i;
-
+                //System.out.println(noOfAttributes);
 		for(i=0; i<noOfAttributes; i++)
 		{
-			ArrayList<String> rangeOfAttr = range.attributeRange.get(i);
-			int[] countOfOccurences = new() int[rangeOfAttr.size()];
+		
+			ArrayList<String> rangeOfAttr = rng.attributeRange.get(i);
+			int countOfOccurences[] = new int[rangeOfAttr.size()];
 			for(int j : countOfOccurences)
 			{
 				j=0;
@@ -37,7 +48,7 @@ public class ID3Driver
 			for(ArrayList<String> Datapoint : dataSet)
 			{
 				String AttrVal = Datapoint.get(i);
-				if AttrVal.equals("?")
+				if (AttrVal.equals("?"))
 				{
 					continue;
 				}
@@ -76,7 +87,7 @@ public class ID3Driver
 
 		for(ArrayList<String> Set : dataSet)
 		{
-			ArrayList<int> indices = ArrayList<int>;
+			ArrayList<Integer> indices = new ArrayList<Integer>();
 			int k =0;
 			for(String s : Set)
 			{
@@ -86,18 +97,27 @@ public class ID3Driver
 				}
 				k++;
 			}
-			for(int k : indices)
+			for(int t : indices)
 			{
-				Set.set(k, CommonAttribute.get(k));
+				Set.set(t, CommonAttribute.get(t));
 
 			}
 		}
+		
+		/*for(ArrayList<String> printarr : dataSet)
+		{
+			for(String str : printarr)
+			{
+				System.out.print(str + " ");
+			}
+			System.out.println(" ");
+		}*/
 
->>>>>>> a51f1559329c39155db196eea10434c36e092ec8
+
 	}
 	public static void test(){
 		try{
-		Range rng = new Range();
+		
 		//if(rng.attributeRange.get(3).contains("continuous")) System.out.println("True");
 		for(int j=0;j<rng.attributeRange.size();j++)
 		{
@@ -147,13 +167,13 @@ public class ID3Driver
 
 //System.out.println("random");
 
-    for(int i=0;i<rng.attributeRange.size();i++)
+    /*for(int i=0;i<rng.attributeRange.size();i++)
 		{
 			for(int j=0;j<rng.attributeRange.get(i).size();j++)
 			{
 				System.out.println(rng.attributeRange.get(i).get(j));
 			}
-		}
+		}*/
 		
 }
 catch(Exception e){ e.printStackTrace();}
