@@ -3,42 +3,16 @@ import java.util.ArrayList;
 
 public class Node
 {
-	private String nodeName;
-	private ArrayList<Node> children = new ArrayList<>();
-	private ArrayList<Integer> dataList_positive;
-	private ArrayList<Integer> dataList_negative;
-	
-	public Node(String nodeName, ArrayList<Integer> dataList)
+	String nodeName;
+	String childAttributeName;  //like 'wind', not 'wind:strong'
+	ArrayList<Node> children = new ArrayList<Node>();
+	String maxInformationGainAttribute_tempVar;
+	ArrayList<ArrayList<String>> reducedDataSet = new ArrayList<ArrayList<String>>();
+
+	public Node(String nodeName,ArrayList<ArrayList<String>> reducedDataSet)
 	{
 		this.nodeName = nodeName;
-		for(Integer index : dataList)
-		{
-			if()
-		}
+		this.reducedDataSet = reducedDataSet;
 	}
-	
-	public ArrayList<Node> getChildren()
-	{
-		return children;
-	}
-	public void setNodeName(String name)
-	{
-		this.nodeName = name;
-	}
-	public String getNodeName()
-	{
-		return nodeName;
-	}
-	public void addChildren(Node child)
-	{
-		children.add(child);
-	}
-	public ArrayList<Integer> getDataListPositive()
-	{
-		return dataList_positive;
-	}
-	public ArrayList<Integer> getDataListNegative()
-	{
-		return dataList_negative;
-	}
+
 }
