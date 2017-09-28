@@ -4,15 +4,17 @@ import java.util.ArrayList;
 public class Node
 {
 	String nodeName;
-	String childAttributeName;  //like 'wind', not 'wind:strong'
+	String childAttributeName;  //For eg. 'wind', not 'wind:strong'
 	ArrayList<Node> children = new ArrayList<Node>();
-	String maxInformationGainAttribute_tempVar;
+	String maxInformationGainAttribute_tempVar;  
+	double informationGain;
 	ArrayList<ArrayList<String>> reducedDataSet = new ArrayList<ArrayList<String>>();
-
-	public Node(String nodeName,ArrayList<ArrayList<String>> reducedDataSet)
+	
+	public Node(String nodeName,ArrayList<ArrayList<String>> reducedDataSet, double informationGain)
 	{
 		this.nodeName = nodeName;
+		this.informationGain = informationGain;
 		this.reducedDataSet = reducedDataSet;
 	}
-
+	
 }
