@@ -1,3 +1,4 @@
+package ID3;
 
 import java.util.ArrayList;
 import java.math.*;
@@ -6,28 +7,22 @@ public class ID3Driver
 {
 	static ArrayList<ArrayList<String>> dataSet;
 	static Range rng;
-        
+
 	public static void main(String[] args)
 	{
-//<<<<<<< HEAD
 		try
 		{
-		
 			dataSet = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt").createDataPointsList();
-			 rng = new Range();
+			rng = new Range();
 		}
 		catch(IOException ioe)
-		{	
+		{
 			ioe.printStackTrace();
 		}
-	        
+
 		test();
 		resolveUnknown();
-		//dataSet = new PreprocessData("./ID3_dataSet.txt","./ID3PreprocessData.txt").createDataPointsList();
-//=======
-		//dataSet = new PreprocessData("ID3_dataSet.txt","ID3PreprocessData.txt").createDataPointsList();
 	}
-
 
 	public static void resolveUnknown()
 	{
@@ -38,7 +33,6 @@ public class ID3Driver
                 //System.out.println(noOfAttributes);
 		for(i=0; i<noOfAttributes; i++)
 		{
-		
 			ArrayList<String> rangeOfAttr = rng.attributeRange.get(i);
 			int countOfOccurences[] = new int[rangeOfAttr.size()];
 			for(int j : countOfOccurences)
@@ -52,9 +46,6 @@ public class ID3Driver
 				{
 					continue;
 				}
-
-
-
 				for(String s : rangeOfAttr)
 				{
 					if(s.equals(AttrVal))
@@ -103,7 +94,7 @@ public class ID3Driver
 
 			}
 		}
-		
+
 		/*for(ArrayList<String> printarr : dataSet)
 		{
 			for(String str : printarr)
@@ -117,7 +108,7 @@ public class ID3Driver
 	}
 	public static void test(){
 		try{
-		
+
 		//if(rng.attributeRange.get(3).contains("continuous")) System.out.println("True");
 		for(int j=0;j<rng.attributeRange.size();j++)
 		{
@@ -174,15 +165,10 @@ public class ID3Driver
 				System.out.println(rng.attributeRange.get(i).get(j));
 			}
 		}*/
-		
+
 }
 catch(Exception e){ e.printStackTrace();}
-	/*public static double calculateEntropy(Node attribute)
-	{
-		double p_positive = attribute.getDataListPositive().size()/(attribute.getDataListPositive().size() + attribute.getDataListNegative().size());
-		double p_negative = attribute.getDataListNegative().size()/(attribute.getDataListPositive().size() + attribute.getDataListNegative().size());
-		return (-(Math.log(p_positive)*(p_positive))-(Math.log(p_negative)*(p_negative)))/Math.log(2);
-	}
+	/*
 
 
 	public void resolveUnknown()//remove all the datapoints with unknown attributeValues
@@ -214,4 +200,50 @@ catch(Exception e){ e.printStackTrace();}
 */
 
 }
+
+	/**
+	 * @author sj
+	 */
+	public static double calculateEntropy(ArrayList<ArrayList<String>> reducedDataSet, String attribute,String attributeValue)
+	{
+		double entropy;
+		int positive_examples=0;
+		int negative_examples = 0;
+		if(attribute.equals(" ")) attribute = "Output";
+		attributeIndex = range.get(attribute);   ////
+		for(ArrayList<String> dataRow : reducedDataSet)
+		{
+			if(dataRow.get(attributeIndex).equals(attributeValue))
+			{
+				if(dataRow.get(dataRow.size()-1).equals("1")) positive_examples++;
+				else negative_examples++;
+			}
+		}
+		double p_positive = positive_examples/reducedDataSet.size();
+		double p_negative = negative_examples/reducedDataSet.size();
+		entropy = -(Math.log(p_positive)*(p_positive))-(Math.log(p_negative)*(p_negative))/Math.log(2);
+
+		return entropy;
+
+	}
+
+	/**
+	 * @author sj
+	 */
+	public static double calculateInformationGain(Node parent,String attribute)
+	{
+		ArrayList<ArrayList<String>> reducedDataSet = parent.reducedDataSet;
+		double attributeInformationGain = 0.0;
+		int numOfRows_attributePresent = 0;
+		for(String attributeValue : range.(attribute))
+		{
+			for(ArrayList<String> dataRow : reducedDataSet)
+			{
+				numOfRows_attributePresent++;
+			}
+			attributeInformationGain = attributeInformationGain + ((double)numOfRows_attributePresent/reducedDataSet.size())calculateEntropy(reducedDataSet, attribute, attributeValue);
+		}
+		return parent.informationGain - attributeInformationGain;
+	}
+
 }
