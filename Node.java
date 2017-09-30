@@ -4,79 +4,42 @@ import java.util.ArrayList;
 public class Node
 {
 	String nodeName;
-	String childAttributeName;  //For eg. 'wind', not 'wind:strong'
 	ArrayList<Node> children = new ArrayList<Node>();
-<<<<<<< HEAD
-	String maxInformationGainAttribute_tempVar;  
 	double informationGain;
-=======
-	String maxInformationGainAttribute_tempVar;
 	String finalReutrnValue;
->>>>>>> 19f918c85dae075f17eaf0a850e38796c90bedd9
+	int leafBit=0;
+	Boolean leafValue;
 	ArrayList<ArrayList<String>> reducedDataSet = new ArrayList<ArrayList<String>>();
 	
-	public Node(String nodeName,ArrayList<ArrayList<String>> reducedDataSet, double informationGain)
-	{
-		this.nodeName = nodeName;
-		this.informationGain = informationGain;
-		this.reducedDataSet = reducedDataSet;
-	}
-<<<<<<< HEAD
+	boolean allYes = true;
+	boolean allNo = true;
 	
-=======
-
-	ArrayList<ArrayList<String>> obtainReducedDataset(String attribute,int j)    // j is wrong, it should be tge index of attribute in hashmAp
+	public Node(String nodeName,ArrayList<ArrayList<String>> reducedDataSet)
 	{
-  	ArrayList<ArrayList<String>> temp= new ArrayList<ArrayList<String>>();
-    for(int i=0;i<reducedDataSet.size();i++)
+		this.nodeName = nodeName;		
+		this.reducedDataSet = reducedDataSet;
+		int i=0,j=0;
+		for(ArrayList<String> dataRow : reducedDataSet)
 		{
-			if(reducedDataSet.get(i).get(j).equals(attribute))  //might create some problem when similar name wit
+			if(dataRow.get(14).equals("0")) i++;		
+			else if(dataRow.get(14).equals("1")) j++;	
+			
+			if(i>=1 && j>=1) 
 			{
-					temp.add(reducedDataSet.get(i));
+				allNo = false;
+				allYes = false;
+				break;
 			}
 		}
-		return temp;
+		if(i==reducedDataSet.size()) allYes = false;	
+		if(j == reducedDataSet.size()) allNo = false;	
 	}
-
-	boolean checkAllPositive(Node parent)
+	public Node(Boolean leafValue)
 	{
-  		for(int i=0;i<reducedDataSet.size();i++)
-			{
-				if(reducedDataSet.get(i).get(15).equals("0")) //here 15 is needed to be changed
-				{
-					return false;
-				}
-			}
-			return true;
+		leafBit = 1;
+		this.leafValue = leafValue; 
 	}
+	
 
-	boolean checkAllNegative(Node parent)
-	{
-		for(i=0;reducedDataSet.size();i++)
-		{
-				if(reducedDataSet.get(i).get(15).equals("1"))
-				{
-					return false;
-				}
-		}
-		return true;
-	}
 
-	String calculateMaxIgAttribute(Node parent)
-	{
-	  double maxIG=0.0;
-	  String maxAttributeName;
-	  for(ArrayList<String> attributeKey : attributeRangeHashMap.keySet())
-	  {
-	    double temp= calculateInformationGain(parent,attributeKey);
-	    if(maxIG < temp)
-	    {
-	      maxIG=temp;
-	      maxAttributeName=attributeKey;
-	    }
-	  }
-	   return maxAttributeName;
-	}
-
->>>>>>> 19f918c85dae075f17eaf0a850e38796c90bedd9
 }

@@ -26,8 +26,12 @@ public class Range2
 			{
 				lineSplit = line.split(":");
 				key = lineSplit[0];
-				lineSplit = lineSplit[1].split(" ,");
-				lineSplit[0] = lineSplit[0].substring(1);				
+				lineSplit = lineSplit[1].split(",");
+				for(int i=0;i<lineSplit.length;i++)
+				{
+					lineSplit[i] = lineSplit[i].substring(1);
+				}
+
 				attributeRangeHashMap.put(key, new ArrayList<String>(Arrays.asList(lineSplit)));
 			}
 		}
