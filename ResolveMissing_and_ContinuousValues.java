@@ -7,22 +7,22 @@ public class ResolveMissing_and_ContinuousValues
 {
 	static ArrayList<ArrayList<String>> dataSet;
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap;
- 	
+
 	public ResolveMissing_and_ContinuousValues(ArrayList<ArrayList<String>> dataSet)
 	{
 		this.dataSet = dataSet;
 		attributeRangeHashMap = new Range2("C:\\Users\\SUBHADIP JANA\\GITHUB\\ID3\\classListID3.txt").attributeRangeHashMap;
 		resolveMissingValues();
-		resolveContinuousValues();	
+		resolveContinuousValues();
 	}
-	
+
 	/*
 	public static void main(String[] args) {
 		try
 		{
 			ResolveMissing_and_ContinuousValues R = new ResolveMissing_and_ContinuousValues(new PreprocessData("C:\\Users\\SUBHADIP JANA\\GITHUB\\ID3\\ID3_dataSet.txt","C:\\Users\\SUBHADIP JANA\\GITHUB\\ID3\\ID3PreprocessData.txt").createDataPointsList());
 			R.resolveMissingValues();
-			R.resolveContinuousValues();			
+			R.resolveContinuousValues();
 		}
 		catch(IOException ioe)
 		{
@@ -30,7 +30,7 @@ public class ResolveMissing_and_ContinuousValues
 		}
 	}
 	*/
-	
+
 	public static void resolveContinuousValues()
 	{
 		int j = 0;
@@ -47,19 +47,19 @@ public class ResolveMissing_and_ContinuousValues
 					{
 						average+=Integer.parseInt(dataRow.get(j));
 					}
-					
+
 					for(ArrayList<String> dataRow : dataSet)
 					{
 						standardDeviation += Math.pow((Integer.parseInt(dataRow.get(j)) - average),2) / dataSet.size();
 					}
-					
+
 					for(ArrayList<String> dataRow : dataSet)
 					{
 						if(dataRow.get(j).equals("?")) continue;
 						else if(Integer.parseInt(dataRow.get(j))< (average - standardDeviation)) dataRow.set(j,"low");
-						else if(Integer.parseInt(dataRow.get(j))> (average - standardDeviation)) dataRow.set(j,"high");
-						else dataRow.set(j,"medium");		
-						
+						else if(Integer.parseInt(dataRow.get(j))> (average + standardDeviation)) dataRow.set(j,"high");
+						else dataRow.set(j,"medium");
+
 					}
 					attributeRangeHashMap.get(keyAttribute).add("high");
 					attributeRangeHashMap.get(keyAttribute).add("low");
@@ -83,21 +83,21 @@ public class ResolveMissing_and_ContinuousValues
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void resolveMissingValues()
 	{
 		ArrayList<String> commonAttribute = new ArrayList<String>();
 		int numOfAttributes = dataSet.get(1).size()-1;
 		ArrayList<String> rangeOfAttributes;
 		int i = 0;
-		
+
 		for(String attribute : attributeRangeHashMap.keySet())
 		{
 			int indexOfCommon = 0,max=0,k=0;
 			rangeOfAttributes = attributeRangeHashMap.get(attribute);
 			int countOfOccurences[] = new int[rangeOfAttributes.size()];
 			Arrays.fill(countOfOccurences, 0);
-			
+
 			for(ArrayList<String> dataRow : dataSet)
 			{
 				String attributeValue = dataRow.get(i);
@@ -114,7 +114,7 @@ public class ResolveMissing_and_ContinuousValues
 					}
 				}
 			}
-			
+
 			for(int j : countOfOccurences)
 			{
 				if(j>max)
@@ -128,7 +128,7 @@ public class ResolveMissing_and_ContinuousValues
 			commonAttribute.add(mostCommonValue);
 			i++;
 		}
-		
+
 		for(ArrayList<String> dataRow : dataSet)
 		{
 			ArrayList<Integer> indices = new ArrayList<Integer>();
@@ -147,7 +147,7 @@ public class ResolveMissing_and_ContinuousValues
 
 			}
 		}
-		
+
 	}
-	
+
 }
