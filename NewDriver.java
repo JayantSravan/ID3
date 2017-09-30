@@ -1,11 +1,12 @@
 package ID3;
 import java.util.*;
-import java.io.*; 
+import java.io.*;
 import java.util.ArrayList;
 
 public class NewDriver
 {
 	static ArrayList<ArrayList<String>> dataSet = new ArrayList<ArrayList<String>>();
+	static ArrayList<ArrayList<String>> testDataSet = new ArrayList<ArrayList<String>>();
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
 	static FileWriter fw;
 	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath)
@@ -13,8 +14,11 @@ public class NewDriver
 		try
 		{
 			dataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
+			testDataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
 			ResolveMissing_and_ContinuousValues R = new ResolveMissing_and_ContinuousValues(dataSet);
+			ResolveMissing_and_ContinuousValues T = new ResolveMissing_and_ContinuousValues(testDataSet);
 			dataSet = R.dataSet;
+			testDataSet=T.dataSet;
 			attributeRangeHashMap = R.attributeRangeHashMap;
 		}
 		catch(IOException ioe)
@@ -22,7 +26,7 @@ public class NewDriver
 			ioe.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		NewDriver N = new NewDriver("C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3PreprocessData.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\classListID3.txt");
 		Node mainNode = new Node("S:Main",dataSet);
@@ -38,8 +42,8 @@ public class NewDriver
 		}
 		try{fw.close();}catch(Exception e){}
 	}
-	
-	
+
+
 	public static double calculateEntropy(ArrayList<ArrayList<String>> reducedDataSet, String attribute,String attributeValue)
 	{
 		double entropy;
@@ -54,8 +58,8 @@ public class NewDriver
 				else negative_examples++;
 			}
 		}
-		
-		else{		
+
+		else{
 		for(String keyAttribute : attributeRangeHashMap.keySet())
 		{
 			if(keyAttribute.equals(attribute)) break;
@@ -71,7 +75,7 @@ public class NewDriver
 			System.out.println(attributeValue);
 		}
 		*/
-		
+
 		for(ArrayList<String> dataRow : reducedDataSet)
 		{
 			if(dataRow.get(attributeIndex).equals(attributeValue))
@@ -90,9 +94,9 @@ public class NewDriver
 		else x1 = Math.log(p_positive);
 		if(p_negative==0.0) x2=0.0;
 		else x2 = Math.log(p_negative);
-		
+
 		entropy = (-(p_positive*x1)-(x2*p_negative))/Math.log(2);
-		return entropy;		
+		return entropy;
 	}
 
 	public static double calculateInformationGain(Node parent,String attribute)
@@ -110,12 +114,12 @@ public class NewDriver
 				if(dataRow.get(attributeIndex).equals(attributeValue))
 					numOfRows_attributePresent++;
 			}
-			attributeInformationGain = attributeInformationGain + ((double)numOfRows_attributePresent/reducedDataSet.size())*calculateEntropy(reducedDataSet, attribute, attributeValue);			
+			attributeInformationGain = attributeInformationGain + ((double)numOfRows_attributePresent/reducedDataSet.size())*calculateEntropy(reducedDataSet, attribute, attributeValue);
 		}
- 		
+
 		return parent.informationGain - attributeInformationGain;
 	}
-	
+
 	public static ArrayList<ArrayList<String>> obtainReducedDataset(Node parent,String attributeValue,int attributeIndex)    // j is wrong, it should be the index of attribute in hashmAp
 	{
 		ArrayList<ArrayList<String>> temp= new ArrayList<ArrayList<String>>();
@@ -168,7 +172,7 @@ public class NewDriver
 	      maxIG=temp;
 	      maxAttributeName=attributeKey;
 	    }
-	    
+
 	    /*
 	    if( maxIG <= temp)
 	    {
@@ -180,12 +184,12 @@ public class NewDriver
 	 // System.out.println(maxAttributeName + "maxi");
 	   return maxAttributeName;
 	}
-	
+
 	  public static  void ID3(Node parent)
-	  {		  
+	  {
 		  System.out.println(parent.nodeName);
 		 try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
-		 
+
 		  /*
 		  if(parent.nodeName.equals("native-country:United-States"))
 		  {
@@ -202,7 +206,7 @@ public class NewDriver
 		  */
 	      if(parent.reducedDataSet.isEmpty())
 	      {
-	    	  parent.children.add(new Node(true));  
+	    	  parent.children.add(new Node(true));
 	      }
 	      else if(parent.allYes)
 	      {
@@ -212,7 +216,7 @@ public class NewDriver
 	      {
 	        parent.children.add(new Node(false));
 	      }
-	      
+
 	      else
 	      {
 	        String maxAttributeName=calculateMaxIgAttribute(parent);
@@ -236,5 +240,40 @@ public class NewDriver
 	        }}
 	        //parent.reducedDataSet = null;
 	      }
+	  }
+
+		public static double Find_accuracy(Node parent)
+	  {
+	      ArrayList<String> temp;                     //just a temporary ArrayList
+	      double count=0.0;                           // obvious
+	      for(int i=0;i<testDataSet.size();i++)       // iterating over testData
+	      {
+	          temp=testDataSet.get(i);
+	          if(checkPositiveCaseForTestData(temp,parent))   //checking whether data is positive or not
+	           {
+	            count++;
+	          }
+	      }
+	      double accuracy=(double)count/testDataSet.size();
+	      return accuracy;
+	  }
+	  public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
+	  {
+	    if(parent.leafBit==1)
+	    {
+	      return parent.leafValue;
+	    }
+	    String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
+	    int attributeindextemp=attributeRangeHashMap.keySet().indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
+	    String attributeName=tempString.get(attributeindextemp); //getting the attributename from tempstring list
+	    String completeName = words[0] + ":"+attributeName; // making the nodename for finding node compared in children list
+	    for(int i=0;i<parent.children.size();i++)   //just interating to find that node with the name completename
+	    {
+	      if(parent.children.get(i).nodeName.equals(completeName))
+	      {
+	        return checkPositiveCaseForTestData(tempString,parent.children.get(i)); //obvious
+	        break;
+	      }
+	    }
 	  }
 }
