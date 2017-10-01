@@ -1,10 +1,8 @@
-package ID3;
+//package ID3;
 import java.util.*;
 import java.io.*;
 import java.util.ArrayList;
 
-//https://www.quora.com/How-can-I-find-a-real-step-by-step-example-of-a-decision-tree-pruning-to-overcome-overfitting
-//https://github.com/gabrielcc2/ID3AlgorithmForLeaningDecisionTree/blob/master/src/ml/control/ID3Learning.java
 public class NewDriver
 {
 	static ArrayList<ArrayList<String>> dataSet = new ArrayList<ArrayList<String>>();
@@ -43,6 +41,8 @@ public class NewDriver
 			System.out.println(child.nodeName);
 		}
 		try{fw.close();}catch(Exception e){}
+
+		System.out.println(Find_accuracy(mainNode));
 	}
 
 
@@ -246,11 +246,12 @@ public class NewDriver
 
 		public static double Find_accuracy(Node parent)
 	  {
+			System.out.println("*********");
 	      ArrayList<String> temp;                     //just a temporary ArrayList
 	      double count=0.0;                           // obvious
 	      for(int i=0;i<testDataSet.size();i++)       // iterating over testData
 	      {
-	          temp=testDataSet.get(i);
+	          temp=dataSet.get(i);
 	          if(checkPositiveCaseForTestData(temp,parent))   //checking whether data is positive or not
 	           {
 	            count++;
@@ -259,24 +260,29 @@ public class NewDriver
 	      double accuracy=(double)count/testDataSet.size();
 	      return accuracy;
 	  }
-	  public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
+	 public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
 	  {
 	    if(parent.leafBit==1)
 	    {
 	      return parent.leafValue;
 	    }
+	    System.out.println(parent.nodeName + parent.children.size() + parent.leafBit) ;
+	    System.out.println(parent.children);
 	    String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
-	    int attributeindextemp=attributeRangeHashMap.keySet().indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
+
+	    int attributeindextemp=new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
 	    String attributeName=tempString.get(attributeindextemp); //getting the attributename from tempstring list
-	    String completeName = words[0] + ":"+attributeName; // making the nodename for finding node compared in children list
+	    String completeName = words[0] + ":"+ attributeName; // making the nodename for finding node compared in children list
 	    for(int i=0;i<parent.children.size();i++)   //just interating to find that node with the name completename
 	    {
 	      if(parent.children.get(i).nodeName.equals(completeName))
 	      {
 	        return checkPositiveCaseForTestData(tempString,parent.children.get(i)); //obvious
-	        break;
+	        //break;
 	      }
 	    }
+
+		return false;
 	  }
 
 }
