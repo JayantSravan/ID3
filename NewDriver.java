@@ -9,12 +9,12 @@ public class NewDriver
 	static ArrayList<ArrayList<String>> testDataSet = new ArrayList<ArrayList<String>>();
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
 	static FileWriter fw;
-	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath)
+	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath,String testDataSetFile,String output_TEST_dataSetFile)
 	{
 		try
 		{
 			dataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
-			testDataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
+			testDataSet = new PreprocessData(testDataSetFile, output_TEST_dataSetFile).createDataPointsList();
 			ResolveMissing_and_ContinuousValues R = new ResolveMissing_and_ContinuousValues(dataSet);
 			ResolveMissing_and_ContinuousValues T = new ResolveMissing_and_ContinuousValues(testDataSet);
 			dataSet = R.dataSet;
@@ -28,7 +28,7 @@ public class NewDriver
 	}
 
 	public static void main(String[] args) {
-		NewDriver N = new NewDriver("C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3PreprocessData.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\classListID3.txt");
+		NewDriver N = new NewDriver("C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3PreprocessData.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\classListID3.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_TEST_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\Test_dataSet_output.txt");
 		Node mainNode = new Node("S:Main",dataSet);
 		mainNode.informationGain = calculateEntropy(dataSet, " ", "");
 		System.out.println(mainNode.informationGain);
@@ -276,4 +276,5 @@ public class NewDriver
 	      }
 	    }
 	  }
+
 }
