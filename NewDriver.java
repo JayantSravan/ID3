@@ -9,6 +9,7 @@ public class NewDriver
 	static ArrayList<ArrayList<String>> testDataSet = new ArrayList<ArrayList<String>>();
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
 	static FileWriter fw;
+	static int c=0;
 	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath,String testDataSetFile,String output_TEST_dataSetFile)
 	{
 		try
@@ -45,8 +46,8 @@ public class NewDriver
 		//System.out.println(Find_accuracy(mainNode));
 
 		System.out.println("****************************");
-    RandomForest randomForest=new RandomForest();
-		randomForest.makeForest();
+    //RandomForest randomForest=new RandomForest();
+		//randomForest.makeForest();
 		System.out.println("----****************************-----");
 	}
 
@@ -192,62 +193,56 @@ public class NewDriver
 	   return maxAttributeName;
 	}
 
-	  public static  void ID3(Node parent)
-	  {
-		  //System.out.println(parent.nodeName);
-		 try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
+	public static  void ID3(Node parent)
+	{
+	// System.out.println(parent.nodeName);
+	try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
 
-		  /*
-		  if(parent.nodeName.equals("native-country:United-States"))
-		  {
-			  if(parent.reducedDataSet.isEmpty()) System.out.println("jiji");
-				for(ArrayList<String> dataRow : parent.reducedDataSet)
+
+			if(parent.reducedDataSet.isEmpty())
+			{
+				//parent.children.add(new Node(true));
+				int index =  new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(parent.nodeName.split(":")[0]);
+				Boolean b = findMostCommon(parent.reducedDataSet, index,parent.nodeName.split(":")[1] );
+			parent.children.add(new Node(b));
+			try{ fw.write("1" + true + "\n");}catch(Exception e){}
+			c++;
+			}
+			else if(parent.allYes)
+			{
+				try{ fw.write("2" + true + "\n");}catch(Exception e){}
+				System.out.println(parent.nodeName);
+			parent.children.add(new Node(true));
+			}
+			else if(parent.allNo)
+			{
+				try{ fw.write("3" + false + "\n");}catch(Exception e){}
+				System.out.println(parent.nodeName);
+				parent.children.add(new Node(false));
+			}
+
+			else
+			{
+				String maxAttributeName=calculateMaxIgAttribute(parent);
+				int attributeIndex = new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(maxAttributeName);   //make a separate array list for keys
+				ArrayList<String> attributeVariety=attributeRangeHashMap.get(maxAttributeName);
+				if(maxAttributeName.compareTo(parent.nodeName.split(":")[0])==0)
 				{
-					for(String str : dataRow)
-					{
-						System.out.print(str + " ");
-					}
-					System.out.println();
+					int index =  new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(parent.nodeName.split(":")[0]);
+					Boolean b = findMostCommon(parent.reducedDataSet, index,parent.nodeName.split(":")[1] );
+					try{ fw.write("x" + "\n");}catch(Exception e){}
+					parent.children.add(new Node(b));
 				}
-		  }
-		  */
-	      if(parent.reducedDataSet.isEmpty())
-	      {
-	    	  parent.children.add(new Node(true));
-	      }
-	      else if(parent.allYes)
-	      {
-	    	 parent.children.add(new Node(true));
-	      }
-	      else if(parent.allNo)
-	      {
-	        parent.children.add(new Node(false));
-	      }
-
-	      else
-	      {
-	        String maxAttributeName=calculateMaxIgAttribute(parent);
-	        //if(maxAttributeName.equals(parent.nodeName)) return;
-	       // System.out.println(maxAttributeName);
-	        int attributeIndex = new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(maxAttributeName);   //make a separate array list for keys
-	        ArrayList<String> attributeVariety=attributeRangeHashMap.get(maxAttributeName);
-	        if(maxAttributeName.compareTo(parent.nodeName.split(":")[0])==0)
-	        {
-	        	//System.out.println("HELP");
-	        	parent.children.add(new Node(true));
-	        }
-	        else{
-	        for(int j=0;j<attributeVariety.size();j++)
-	        {
-	            Node child=new Node(maxAttributeName + ":" + attributeVariety.get(j),obtainReducedDataset(parent,attributeVariety.get(j),attributeIndex));
-	            parent.children.add(child);
-	            child.informationGain = calculateEntropy(parent.reducedDataSet, maxAttributeName, attributeVariety.get(j));
-	           // System.out.println(child.nodeName);
-	            ID3(child);
-	        }}
-	        //parent.reducedDataSet = null;
-	      }
-	  }
+				else{
+				for(int j=0;j<attributeVariety.size();j++)
+				{
+						Node child=new Node(maxAttributeName + ":" + attributeVariety.get(j),obtainReducedDataset(parent,attributeVariety.get(j),attributeIndex));
+						parent.children.add(child);
+						child.informationGain = calculateEntropy(parent.reducedDataSet, maxAttributeName, attributeVariety.get(j));
+						ID3(child);
+				}}
+			}
+	}
 
 		public static double Find_accuracy(Node parent)
 	  {
@@ -268,10 +263,11 @@ public class NewDriver
 	  }
 	 public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
 	  {
-	    if(parent.children.get(0).leafBit==1)
+	    if(parent.leafBit==1)
 	    {
-	      return parent.children.get(0).leafValue;
+	      return parent.leafValue;
 	    }
+			if(parent.children.get(0).leafBit==1) return parent.children.get(0).leafValue;
 	    //System.out.println(parent.nodeName + parent.children.size() + parent.leafBit) ;
 	    //System.out.println(parent.children);
 	    String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
@@ -291,5 +287,18 @@ public class NewDriver
 		return false;
 	  }
 
-
+		public static Boolean findMostCommon(ArrayList<ArrayList<String>> reducedDataSet, int attributeIndex, String attributeValue)
+ 		{
+ 			int i=0,j=0;
+ 			for(ArrayList<String> dataRow : reducedDataSet)
+ 			{
+ 				if(dataRow.get(attributeIndex).equals(attributeValue))
+ 				{
+ 					if(dataRow.get(14).equals("1")) i++;
+ 					else if (dataRow.get(14).equals("0")) j++;
+ 				}
+ 			}
+ 			if(i>j) return true;
+ 			else return false;
+ 	}
 }
