@@ -1,10 +1,17 @@
 import java.math.*;
+import java.util.*;
 public class RandomForest
 {
-    static int number = 1000;
-    ArrayList<node> setOfTrees = ArrayList<node>;
-    static int numberOfAttributes = Math.ceil(Math.sqrt(NewDriver.datSet.get(1).size()));
-    public static void makeForest(int number, int numberOfAttributes)
+    static int number;
+    static ArrayList<Node> setOfTrees;
+    static int numberOfAttributes;
+    public RandomForest()
+    {
+      number = 10;
+      setOfTrees = new ArrayList<Node>();
+      numberOfAttributes = (int)(Math.sqrt((NewDriver.dataSet.get(1).size()-1))) +1;
+    }
+    public static void makeForest()
     {
         for(int n = 0; n<number; n++)
         {
@@ -14,7 +21,7 @@ public class RandomForest
             for(int i= 0; i<numberOfAttributes; i++)
             {
 
-                int randomNumber = Math.random() * NewDriver.dataSet.get(1).size();
+                int randomNumber = (int)(Math.random() * (NewDriver.dataSet.get(1).size()-1));
                 if(!setOfAttributes.contains(randomNumber))
                 {
                     setOfAttributes.add(randomNumber);
@@ -25,15 +32,15 @@ public class RandomForest
                 }
 
             }
-            for (int i = 0; i < NewDriver.dataset.size(); i++)
+            for (int i = 0; i < NewDriver.dataSet.size()-1; i++)
             {
-                int randomNumber = Math.random() * NewDriver.dataSet.size();
+                int randomNumber = (int)(Math.random() * (NewDriver.dataSet.size()-1));
                 setOfDatapoints.add(randomNumber);
             }
 
             for(Integer datapointNumber : setOfDatapoints)
             {
-                ArrayList<String> datapoint = dataSet.get(datapointNumber);
+                ArrayList<String> datapoint = NewDriver.dataSet.get(datapointNumber);
                 ArrayList<String> randomDatapoint = new ArrayList<String>();
                 for(Integer attributeNumber : setOfAttributes)
                 {
@@ -45,9 +52,9 @@ public class RandomForest
 
             Node treeOfTheForest = new Node("SingleTree", randomDataSet);
 
-            treeOfTheForest.informationGain = calculateEntropy(randomDataSet, " ", "");
+            treeOfTheForest.informationGain = NewDriver.calculateEntropy(randomDataSet, " ", "");
             System.out.println(treeOfTheForest.informationGain);
-            ID3(treeOfTheForest);
+            NewDriver.ID3(treeOfTheForest);
             setOfTrees.add(treeOfTheForest);
         }
     }

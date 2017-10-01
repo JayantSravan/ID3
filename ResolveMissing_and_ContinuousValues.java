@@ -11,7 +11,7 @@ public class ResolveMissing_and_ContinuousValues
 	public ResolveMissing_and_ContinuousValues(ArrayList<ArrayList<String>> dataSet)
 	{
 		this.dataSet = dataSet;
-		attributeRangeHashMap = new Range2("C:\\Users\\SUBHADIP JANA\\GITHUB\\ID3\\classListID3.txt").attributeRangeHashMap;
+		attributeRangeHashMap = new Range2("classListID3.txt").attributeRangeHashMap;
 		resolveMissingValues();
 		resolveContinuousValues();
 	}
@@ -74,6 +74,7 @@ public class ResolveMissing_and_ContinuousValues
 		for(String attribute : attributeRangeHashMap.keySet())
 		{
 			int indexOfCommon = 0,max=0,k=0;
+			System.out.println("Yo");
 			rangeOfAttributes = attributeRangeHashMap.get(attribute);
 			int countOfOccurences[] = new int[rangeOfAttributes.size()];
 			Arrays.fill(countOfOccurences, 0);

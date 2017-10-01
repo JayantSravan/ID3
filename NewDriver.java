@@ -28,21 +28,26 @@ public class NewDriver
 	}
 
 	public static void main(String[] args) {
-		NewDriver N = new NewDriver("C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3PreprocessData.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\classListID3.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\ID3_TEST_dataSet.txt","C:\\Users\\SUBHADIP JANA\\Desktop\\Test_dataSet_output.txt");
+		NewDriver N = new NewDriver("ID3_dataSet.txt","ID3PreprocessData.txt","classListID3.txt","ID3_TEST_dataSet.txt","Test_dataSet_output.txt");
 		Node mainNode = new Node("S:Main",dataSet);
 		mainNode.informationGain = calculateEntropy(dataSet, " ", "");
-		System.out.println(mainNode.informationGain);
+		//System.out.println(mainNode.informationGain);
 		try{
-		 fw = new FileWriter("C:\\Users\\SUBHADIP JANA\\Desktop\\vali.txt");}
+		 fw = new FileWriter("vali.txt");}
 		catch(Exception e){}
 		ID3(mainNode);
 		for(Node child : mainNode.children)
 		{
-			System.out.println(child.nodeName);
+			//System.out.println(child.nodeName);
 		}
 		try{fw.close();}catch(Exception e){}
 
-		System.out.println(Find_accuracy(mainNode));
+		//System.out.println(Find_accuracy(mainNode));
+
+		System.out.println("****************************");
+    RandomForest randomForest=new RandomForest();
+		randomForest.makeForest();
+		System.out.println("----****************************-----");
 	}
 
 
@@ -189,7 +194,7 @@ public class NewDriver
 
 	  public static  void ID3(Node parent)
 	  {
-		  System.out.println(parent.nodeName);
+		  //System.out.println(parent.nodeName);
 		 try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
 
 		  /*
@@ -228,7 +233,7 @@ public class NewDriver
 	        ArrayList<String> attributeVariety=attributeRangeHashMap.get(maxAttributeName);
 	        if(maxAttributeName.compareTo(parent.nodeName.split(":")[0])==0)
 	        {
-	        	System.out.println("HELP");
+	        	//System.out.println("HELP");
 	        	parent.children.add(new Node(true));
 	        }
 	        else{
@@ -252,7 +257,8 @@ public class NewDriver
 	      for(int i=0;i<testDataSet.size();i++)       // iterating over testData
 	      {
 	          temp=dataSet.get(i);
-	          if(checkPositiveCaseForTestData(temp,parent))   //checking whether data is positive or not
+						boolean returnedValueFromTree=checkPositiveCaseForTestData(temp,parent);
+	          if((returnedValueFromTree && temp.get(temp.size()-1).equals("1"))||((!returnedValueFromTree) && temp.get(temp.size()-1).equals("0")))   //checking whether data is positive or not
 	           {
 	            count++;
 	          }
@@ -262,12 +268,12 @@ public class NewDriver
 	  }
 	 public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
 	  {
-	    if(parent.leafBit==1)
+	    if(parent.children.get(0).leafBit==1)
 	    {
-	      return parent.leafValue;
+	      return parent.children.get(0).leafValue;
 	    }
-	    System.out.println(parent.nodeName + parent.children.size() + parent.leafBit) ;
-	    System.out.println(parent.children);
+	    //System.out.println(parent.nodeName + parent.children.size() + parent.leafBit) ;
+	    //System.out.println(parent.children);
 	    String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
 
 	    int attributeindextemp=new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
@@ -284,5 +290,6 @@ public class NewDriver
 
 		return false;
 	  }
+
 
 }

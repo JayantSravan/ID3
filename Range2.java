@@ -1,4 +1,4 @@
-package ID3;
+//package ID3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
@@ -8,14 +8,14 @@ public class Range2
 {
 	LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
 	String classListFilePath;
-	
+
 	public Range2(String classListFilePath)
 	{
 		this.classListFilePath = classListFilePath;
 		createAttributeRange();
-	}	
-	
-	private void createAttributeRange() 
+	}
+
+	private void createAttributeRange()
 	{
 		String lineSplit[];
 		String line,key;
@@ -39,5 +39,5 @@ public class Range2
 		{
 			ioe.printStackTrace();
 		}
-	}	
+	}
 }

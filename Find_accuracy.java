@@ -1,6 +1,6 @@
 public class Find_accuracy{
 
-  public static int Find_accuracy(Node parent)
+  /*public static int Find_accuracy(Node parent)
   {
       ArrayList<string> temp;                     //just a temporary ArrayList
       double count=0.0;                           // obvious
@@ -33,5 +33,9 @@ public class Find_accuracy{
         break;
       }
     }
+  }*/
+  public static void prune(Node newtree)
+  {
+      Node temp=new Node(newtree);
   }
 }
