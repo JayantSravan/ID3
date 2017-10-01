@@ -6,15 +6,19 @@ import java.util.ArrayList;
 public class NewDriver
 {
 	static ArrayList<ArrayList<String>> dataSet = new ArrayList<ArrayList<String>>();
+	static ArrayList<ArrayList<String>> testDataSet = new ArrayList<ArrayList<String>>();
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
-
+	static FileWriter fw;
 	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath)
 	{
 		try
 		{
 			dataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
+			testDataSet = new PreprocessData(rawDataSetFile, outputDataSetFile).createDataPointsList();
 			ResolveMissing_and_ContinuousValues R = new ResolveMissing_and_ContinuousValues(dataSet);
+			ResolveMissing_and_ContinuousValues T = new ResolveMissing_and_ContinuousValues(testDataSet);
 			dataSet = R.dataSet;
+			testDataSet=T.dataSet;
 			attributeRangeHashMap = R.attributeRangeHashMap;
 		}
 		catch(IOException ioe)
@@ -28,11 +32,15 @@ public class NewDriver
 		Node mainNode = new Node("S:Main",dataSet);
 		mainNode.informationGain = calculateEntropy(dataSet, " ", "");
 		System.out.println(mainNode.informationGain);
+		try{
+		 fw = new FileWriter("C:\\Users\\SUBHADIP JANA\\Desktop\\vali.txt");}
+		catch(Exception e){}
 		ID3(mainNode);
 		for(Node child : mainNode.children)
 		{
 			System.out.println(child.nodeName);
 		}
+		try{fw.close();}catch(Exception e){}
 	}
 
 
@@ -179,7 +187,8 @@ public class NewDriver
 
 	  public static  void ID3(Node parent)
 	  {
-		  System.out.println("lll"+parent.nodeName + " " + parent.allYes + " " + parent.allNo);
+		  System.out.println(parent.nodeName);
+		 try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
 
 		  /*
 		  if(parent.nodeName.equals("native-country:United-States"))
@@ -231,5 +240,40 @@ public class NewDriver
 	        }}
 	        //parent.reducedDataSet = null;
 	      }
+	  }
+
+		public static double Find_accuracy(Node parent)
+	  {
+	      ArrayList<String> temp;                     //just a temporary ArrayList
+	      double count=0.0;                           // obvious
+	      for(int i=0;i<testDataSet.size();i++)       // iterating over testData
+	      {
+	          temp=testDataSet.get(i);
+	          if(checkPositiveCaseForTestData(temp,parent))   //checking whether data is positive or not
+	           {
+	            count++;
+	          }
+	      }
+	      double accuracy=(double)count/testDataSet.size();
+	      return accuracy;
+	  }
+	  public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
+	  {
+	    if(parent.leafBit==1)
+	    {
+	      return parent.leafValue;
+	    }
+	    String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
+	    int attributeindextemp=attributeRangeHashMap.keySet().indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
+	    String attributeName=tempString.get(attributeindextemp); //getting the attributename from tempstring list
+	    String completeName = words[0] + ":"+attributeName; // making the nodename for finding node compared in children list
+	    for(int i=0;i<parent.children.size();i++)   //just interating to find that node with the name completename
+	    {
+	      if(parent.children.get(i).nodeName.equals(completeName))
+	      {
+	        return checkPositiveCaseForTestData(tempString,parent.children.get(i)); //obvious
+	        break;
+	      }
+	    }
 	  }
 }
