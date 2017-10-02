@@ -48,6 +48,7 @@ public class NewDriver
 		System.out.println("****************************");
     //RandomForest randomForest=new RandomForest();
 		//randomForest.makeForest();
+		RandomForest(mainNode);
 		System.out.println("----****************************-----");
 	}
 
@@ -211,13 +212,13 @@ public class NewDriver
 			else if(parent.allYes)
 			{
 				try{ fw.write("2" + true + "\n");}catch(Exception e){}
-				System.out.println(parent.nodeName);
+				//System.out.println(parent.nodeName);
 			parent.children.add(new Node(true));
 			}
 			else if(parent.allNo)
 			{
 				try{ fw.write("3" + false + "\n");}catch(Exception e){}
-				System.out.println(parent.nodeName);
+				//System.out.println(parent.nodeName);
 				parent.children.add(new Node(false));
 			}
 
@@ -246,7 +247,7 @@ public class NewDriver
 
 		public static double Find_accuracy(Node parent)
 	  {
-			System.out.println("*********");
+			//System.out.println("*********");
 	      ArrayList<String> temp;                     //just a temporary ArrayList
 	      double count=0.0;                           // obvious
 	      for(int i=0;i<testDataSet.size();i++)       // iterating over testData
@@ -301,4 +302,160 @@ public class NewDriver
  			if(i>j) return true;
  			else return false;
  	}
+
+
+
+
+
+	/************************************************************/
+	//Functions for random Functions
+	static ArrayList<String> attributeList;
+	static ArrayList<String> randomAttributeList;
+	static ArrayList<ArrayList<String>> randomDataSet;
+	static int numberOfAttributes;
+	static int flag=0;
+
+
+	public static void RandomForest(Node parent)
+	{	attributeList=new ArrayList<String>(attributeRangeHashMap.keySet());
+		randomAttributeList=new ArrayList<String>();
+		randomDataSet=new ArrayList<ArrayList<String>>();
+
+		/*for(int i=0;i<4;i++)
+		{
+			randomNumber = (int)(Math.random() * (attributeList.size()));
+			randomAttributeList.add(attributeList.get(randomNumber));
+			attributeList.remove(randomNumber);
+		}*/
+		for(int i=0;i<dataSet.size();i++)
+		{
+			randomDataSet.add(dataSet.get((int)(Math.random() * (dataSet.size()))));
+		}
+		parent.reducedDataSet=randomDataSet;
+		ID3Random(parent);
+}
+	public static String calculateMaxIgAttributeRandom(Node parent)
+	{
+		double maxIG=0.0;
+		String maxAttributeName = "aa";
+		Node maxIgNode;
+		randomListGenerator();
+
+		/*if(numberOfAttributes==1)
+		{
+			i++;
+		}*/
+
+		if(flag==0)
+		{	for(int i=0; i <randomAttributeList.size();i++)
+			{
+				/*System.out.println("-------------------------");
+				System.out.println(randomAttributeList.get(i));
+				System.out.println("-------------------------");*/
+
+				double temp= calculateInformationGain(parent,randomAttributeList.get(i));
+				//System.out.println(temp + " " + attributeKey);
+				String attributeKey=randomAttributeList.get(i);
+				if(temp==1.0){ maxAttributeName = attributeKey;  return attributeKey;}
+				else if(temp!=parent.informationGain && maxIG <= temp)
+				{
+					//System.out.println("max1" + attributeKey);
+					maxIG=temp;
+					maxAttributeName=attributeKey;
+					// stores a reference to node of highest Ig so as to be removed from attributeList
+				}
+
+				//again randomly generates a list
+			}
+		  	attributeList.remove(maxAttributeName);//removing the node from the attributeList
+
+
+
+		}
+		return maxAttributeName;
+	}
+	public static  void ID3Random(Node parent)
+	{
+	// System.out.println(parent.nodeName);
+	try{ fw.write(parent.nodeName + "\n");}catch(Exception e){}
+
+
+			if(parent.reducedDataSet.isEmpty())
+			{
+				//parent.children.add(new Node(true));
+				int index =  new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(parent.nodeName.split(":")[0]);
+				Boolean b = findMostCommon(parent.reducedDataSet, index,parent.nodeName.split(":")[1] );
+			parent.children.add(new Node(b));
+			try{ fw.write("1" + true + "\n");}catch(Exception e){}
+			c++;
+			}
+			else if(parent.allYes)
+			{
+				try{ fw.write("2" + true + "\n");}catch(Exception e){}
+				System.out.println(parent.nodeName);
+			parent.children.add(new Node(true));
+			}
+			else if(parent.allNo)
+			{
+				try{ fw.write("3" + false + "\n");}catch(Exception e){}
+				System.out.println(parent.nodeName);
+				parent.children.add(new Node(false));
+			}
+
+			else
+			{
+				String maxAttributeName=calculateMaxIgAttributeRandom(parent);
+				int attributeIndex = new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(maxAttributeName);   //make a separate array list for keys
+				ArrayList<String> attributeVariety=attributeRangeHashMap.get(maxAttributeName);
+				if(maxAttributeName.compareTo(parent.nodeName.split(":")[0])==0)
+				{
+					int index =  new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(parent.nodeName.split(":")[0]);
+					Boolean b = findMostCommon(parent.reducedDataSet, index,parent.nodeName.split(":")[1] );
+					try{ fw.write("x" + "\n");}catch(Exception e){}
+					parent.children.add(new Node(b));
+				}
+				else{
+				for(int j=0;j<attributeVariety.size() && (flag==0);j++)
+				{
+					  System.out.println("j "+j);
+						Node child=new Node(maxAttributeName + ":" + attributeVariety.get(j),obtainReducedDataset(parent,attributeVariety.get(j),attributeIndex));
+						parent.children.add(child);
+						child.informationGain = calculateEntropy(parent.reducedDataSet, maxAttributeName, attributeVariety.get(j));
+						ID3Random(child);
+				}}
+			}
+	}
+
+	public static void randomListGenerator()
+	{
+		if(!(randomAttributeList.isEmpty()))
+		{
+			randomAttributeList.clear();
+		}
+
+		numberOfAttributes = (int)(Math.sqrt(attributeList.size())) +1;
+		System.out.println("numberOfAttributes : "+numberOfAttributes);
+		/*if(numberOfAttributes==1)
+		{
+			flag=1;
+		}*/
+
+		if(flag==0)
+		{	for(int i=0;i<numberOfAttributes;i++)
+			{
+
+				int randomNumber = (int)(Math.random() * (attributeList.size()));
+				System.out.println(" random number: "+randomNumber);
+				randomAttributeList.add(attributeList.get(randomNumber));
+				//attributeList.remove(randomNumber);
+			}
+			if(numberOfAttributes==1)
+			{
+				flag=1;
+			}
+			//attributeList.clear();
+			System.gc();
+			//attributeList=new ArrayList<String>(attributeRangeHashMap.keySet());
+	}
+}
 }
