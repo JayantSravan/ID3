@@ -27,10 +27,11 @@ public class NewDriver
 			ioe.printStackTrace();
 		}
 	}
-
+	public static Node root;
 	public static void main(String[] args) {
 		NewDriver N = new NewDriver("ID3_dataSet.txt","ID3PreprocessData.txt","classListID3.txt","ID3_TEST_dataSet.txt","Test_dataSet_output.txt");
 		Node mainNode = new Node("S:Main",dataSet);
+		root = mainNode;
 		mainNode.informationGain = calculateEntropy(dataSet, " ", "");
 		//System.out.println(mainNode.informationGain);
 		try{
@@ -245,7 +246,7 @@ public class NewDriver
 			}
 	}
 
-		public static double Find_accuracy(Node parent)
+		public static double findAccuracy(Node parent)
 	  {
 			//System.out.println("*********");
 	      ArrayList<String> temp;                     //just a temporary ArrayList
@@ -305,7 +306,7 @@ public class NewDriver
 
 
 	///////////////////////////////////////for Pruning ///////////////////////////////////////////////////////
-	public static pruneTree(Node root) //driver method for pruning.
+	public static void pruneTree(Node root) //driver method for pruning.
 	{
 		/*
 		1. Iterate over the tree multiple times. Stop when pruning can no longer increase the accuracy.
@@ -331,7 +332,7 @@ public class NewDriver
 			}
 		}
 	}
-	static Node best = root;
+	static Node best;
 	static double maxAccuracy;
 	public static Node findBestLeafNode( Node root )
 	{
@@ -344,7 +345,7 @@ public class NewDriver
 	{
 		if(node.leafBit == 1) //return if this node itself is a leaf
 		{
-			return 0;
+			return;
 		}
 
 		//*****************************************
@@ -373,7 +374,8 @@ public class NewDriver
 		int j=0;
 		for(ArrayList<String> datapoint : node.reducedDataSet)  //traverse through and count
 		{
-			String output = datapoint.get(lastIndexOf(datapoint));
+			int lastIndex = datapoint.size()-1;
+			String output = datapoint.get( lastIndex );
 			if(output.equals("1"))
 			{
 				i++;
