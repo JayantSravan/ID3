@@ -54,8 +54,8 @@ public class NewDriver
 		for(int i=0;i<100;i++)
 		{
 			mainNodeRandom.add(new Node("S:Main",dataSet));
-			mainNodeRandom.informationGain = calculateEntropy(dataSet, " ", "");
-			RandomForest(mainNodeRandom);
+			mainNodeRandom.get(i).informationGain = calculateEntropy(dataSet, " ", "");
+			RandomForest(mainNodeRandom.get(i));
 		}
 		//pruneTree(mainNode);
 		System.out.println(findAccuracy(mainNodeRandom));
