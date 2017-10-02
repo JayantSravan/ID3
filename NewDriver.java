@@ -52,8 +52,8 @@ public class NewDriver
 		Node mainNodeRandom = new Node("S:Main",dataSet);
 		mainNodeRandom.informationGain = calculateEntropy(dataSet, " ", "");
 		//RandomForest(mainNodeRandom);
-
-		//pruneTree(mainNode);
+		assignleafValueToNodes(root);
+		pruneTree(mainNode);
 		//System.out.println(findAccuracy(mainNodeRandom));
 		System.out.println("----****************************-----");
 	}
@@ -279,7 +279,7 @@ public class NewDriver
 			return accuracy;
 	}
 
-public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
+	public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,Node parent)   //returns true or false depending
 	{
 		/*if(parent.leafBit==1)
 		{
@@ -336,9 +336,11 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		double accuracy = findAccuracy(root);
 		while(iterateCondition)
 		{
-			//System.out.println("Entered function");
+			int count =0;
+			System.out.println("Entered function");
 			Node nodeToBePruned = findBestLeafNode(root); //////gets the node which on pruning gives best accuracy
-			//System.out.println("Got one");
+			count++;
+			System.out.println("Got one - " + count);
 			nodeToBePruned.leafBit=1;   //make the best one a leaf
 			double maxAccuracy = findAccuracy(root);
 			if(maxAccuracy > accuracy) ///checking if pruning is any better
@@ -357,7 +359,9 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 	public static Node findBestLeafNode( Node root )
 	{
 		maxAccuracy = 0; //maximum accuracy that can be achieved after pruning the present tree
+		System.out.println("Start one DFS");
 		DFS(root); //traverse the entire tree to know the best node to be used
+		System.out.println("Traversed once");
 		return  best;
 	}
 
@@ -365,15 +369,16 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 	{
 		if(node.leafBit == 1) //return if this node itself is a leaf
 		{
+			//System.out.println("Found a leaf");
 			return;
 		}
-
+		//System.out.println("Not a leaf");
 		//*****************************************
 		//check if this node gives the best accuracy
 		node.leafBit = 1; //make it a leaf
-		node.leafValue = findMostCommonOutput( node ); //check the majority output of the node
-		//System.out.println("Could find the most common output of a node");
+		//node.leafValue = findMostCommonOutput( node ); //check the majority output of the node
 		double accuracy = findAccuracy(root); //get the accuracy if this node is made a leaf
+
 		if(accuracy>maxAccuracy)
 		{
 			best = node; //make this the best node
@@ -382,7 +387,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		node.leafBit = 0; //make the node an internal node again
 		//*****************************************
 
-
+		//System.out.println("Passinf to children");
 		for(Node child : node.children) //repeat the process for its children also
 		{
 			DFS(child);
@@ -397,6 +402,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		{
 			int lastIndex = datapoint.size()-1;
 			String output = datapoint.get( lastIndex );
+
 			if(output.equals("1"))
 			{
 				i++;
@@ -414,6 +420,21 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		{
 			return false;
 		}
+	}
+
+	public static void assignleafValueToNodes(Node node)
+	{
+		node.leafValue = findMostCommonOutput(node);
+
+		if(node.leafBit!=0)
+		{
+			return;
+		}
+		for(Node child : node.children)
+		{
+			assignleafValueToNodes(child);
+		}
+
 	}
 	//////////////////////////////////////end - for pruning////////////////////////////////////////////////////
 
