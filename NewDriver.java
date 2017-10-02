@@ -8,6 +8,7 @@ public class NewDriver
 	static ArrayList<ArrayList<String>> dataSet = new ArrayList<ArrayList<String>>();
 	static ArrayList<ArrayList<String>> testDataSet = new ArrayList<ArrayList<String>>();
 	static LinkedHashMap<String, ArrayList<String>> attributeRangeHashMap = new LinkedHashMap<String, ArrayList<String>>();
+  static ArrayList<Node> randomMainNode; //arrallist for storing nodes of random decision trees
 	static FileWriter fw;
 	static int c=0;
 	public NewDriver(String rawDataSetFile, String outputDataSetFile,String classListFilePath,String testDataSetFile,String output_TEST_dataSetFile)
@@ -49,12 +50,15 @@ public class NewDriver
 		System.out.println("****************************");
     //RandomForest randomForest=new RandomForest();
 		//randomForest.makeForest();
-		Node mainNodeRandom = new Node("S:Main",dataSet);
-		mainNodeRandom.informationGain = calculateEntropy(dataSet, " ", "");
-		//RandomForest(mainNodeRandom);
-
+		mainNodeRandom=new ArrayList<Node>();
+		for(int i=0;i<100;i++)
+		{
+			mainNodeRandom.add(new Node("S:Main",dataSet));
+			mainNodeRandom.informationGain = calculateEntropy(dataSet, " ", "");
+			RandomForest(mainNodeRandom);
+		}
 		//pruneTree(mainNode);
-		//System.out.println(findAccuracy(mainNodeRandom));
+		System.out.println(findAccuracy(mainNodeRandom));
 		System.out.println("----****************************-----");
 	}
 
@@ -285,16 +289,21 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		{
 			return parent.leafValue;
 		}*/
-		//System.out.println(parent.children.get(0).leafBit);
-		if(parent.children.get(0).leafBit==1) return parent.children.get(0).leafValue;
+		//System.out.println(parent.children.get(0).nodeName);
+		if(!(parent.children.isEmpty())&& parent.children.get(0).leafBit==1) return parent.children.get(0).leafValue;
     //System.out.println(parent.children.get(0).leafBit);
 	 // System.out.println(parent.nodeName + parent.children.size() + parent.leafBit) ;
 		//System.out.println(parent.nodeName + parent.children.get(0).leafValue);
-		String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
+		String word="aa";
+		if(!parent.children.isEmpty())
+		{
+			String[] words=parent.children.get(0).nodeName.split(":");  // for fetching out attributetype eg: wind from wind:high
+			word=words[0];
 
-		int attributeindextemp=new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(words[0]); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
+		int attributeindextemp=new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(word); // calculating indexof element in hashmap so as to pick attributename (eg; high) from tempstring
 		String attributeName=tempString.get(attributeindextemp); //getting the attributename from tempstring list
-		String completeName = words[0] + ":"+ attributeName; // making the nodename for finding node compared in children list
+		String completeName = word + ":"+ attributeName; // making the nodename for finding node compared in children list
+
 		for(int i=0;i<parent.children.size();i++)   //just interating to find that node with the name completename
 		{
 			if(parent.children.get(i).nodeName.equals(completeName))
@@ -304,6 +313,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 				//break;
 			}
 		}
+	}
 	return false;
 	}
 
@@ -427,7 +437,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 		static ArrayList<String> randomAttributeList;
 		static ArrayList<ArrayList<String>> randomDataSet;
 		static int numberOfAttributes;
-		static int flag=0;
+
 
 
 		public static void RandomForest(Node parent)
@@ -446,41 +456,19 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 				randomDataSet.add(dataSet.get((int)(Math.random() * (dataSet.size()))));
 			}
 			parent.reducedDataSet=randomDataSet;
+			parent.informationGain=calculateEntropy(randomDataSet, " ", "");
 			ID3Random(parent);
 		}
 		public static String calculateMaxIgAttributeRandom(Node parent)
 		{
 			double maxIG=0.0;
 			String maxAttributeName = "aa";
-			Node maxIgNode;
 			randomListGenerator();
-
-			/*if(numberOfAttributes==1)
-			{
-				i++;
-			}*/
-			//System.out.println("kk" + flag + " " + randomAttributeList.size());
-			if(flag==0)
-			{	for(int i=0; i <randomAttributeList.size();i++)
+				for(int i=0; i <randomAttributeList.size();i++)
 				{
-					/*System.out.println("-------------------------");
-					System.out.println(randomAttributeList.get(i));
-					System.out.println("-------------------------");*/
-
 					double temp= calculateInformationGain(parent,randomAttributeList.get(i));
-					//System.out.println(temp + " " + attributeKey);
-					//System.out.println("val" + temp + " " + maxIG + " " + parent.informationGain + " " + randomAttributeList.get(i) +" " + parent.nodeName);
 					String attributeKey=randomAttributeList.get(i);
 					if(temp==1.0){ maxAttributeName = attributeKey;  return attributeKey;}
-					/*
-					else if(temp!=parent.informationGain && maxIG <= temp)
-					{
-						//System.out.println("max1" + attributeKey);
-						maxIG=temp;
-						maxAttributeName=attributeKey;
-						// stores a reference to node of highest Ig so as to be removed from attributeList
-					}
-					*/
 					else if(attributeKey.compareTo(parent.nodeName.split(":")[0])!=0 && maxIG <= temp)
 					{
 						//System.out.println("max1" + attributeKey);
@@ -491,7 +479,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 					//again randomly generates a list
 				}
 			  	attributeList.remove(maxAttributeName);//removing the node from the attributeList
-			}
+
 			return maxAttributeName;
 		}
 		public static  void ID3Random(Node parent)
@@ -524,7 +512,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 
 				else
 				{
-					if(attributeList.size()==0) return;
+					if(attributeList.isEmpty()) return;
 					String maxAttributeName=calculateMaxIgAttributeRandom(parent);
 					int attributeIndex = new ArrayList<String>(attributeRangeHashMap.keySet()).indexOf(maxAttributeName);   //make a separate array list for keys
 					ArrayList<String> attributeVariety=attributeRangeHashMap.get(maxAttributeName);
@@ -537,7 +525,7 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 						parent.children.add(new Node(b));
 					}
 					else{
-					for(int j=0;j<attributeVariety.size() && (flag==0);j++)
+					for(int j=0;j<attributeVariety.size();j++)
 					{
 						  //System.out.println("j "+j);
 							Node child=new Node(maxAttributeName + ":" + attributeVariety.get(j),obtainReducedDataset(parent,attributeVariety.get(j),attributeIndex));
@@ -562,24 +550,18 @@ public static boolean checkPositiveCaseForTestData(ArrayList<String> tempString,
 				flag=1;
 			}*/
 
-			if(flag==0)
-			{	for(int i=0;i<numberOfAttributes;i++)
+
+				for(int i=0;i<numberOfAttributes;i++)
 				{
 
 					int randomNumber = (int)(Math.random() * (attributeList.size()));
-					//System.out.println(" random number: "+randomNumber);
-					//System.out.println(attributeList.size());
 					randomAttributeList.add(attributeList.get(randomNumber));
 					//attributeList.remove(randomNumber);
-				}
-				if(numberOfAttributes==1)
-				{
-					flag=1;
 				}
 				//attributeList.clear();
 				System.gc();
 				//attributeList=new ArrayList<String>(attributeRangeHashMap.keySet());
-			}
+
 	}
 
 }
